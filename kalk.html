@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kalkulator Modern</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Styling Futuristik dengan Animasi */
+    * {
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+      background-image: url("neon.png");
+      animation: galaxy 20s ease infinite;
+    }
+    
+    @keyframes galaxy {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .calculator {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 25px;
+      width: 350px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.2),
+                  0 0 60px rgba(255, 0, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transform: perspective(1000px);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .calculator:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) translateZ(20px);
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.4),
+                  0 0 80px rgba(255, 0, 255, 0.3);
+    }
+    
+    .display {
+      background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      text-align: right;
+      font-size: 2.8em;
+      color: #00ff9d;
+      min-height: 100px;
+      overflow-x: auto;
+      white-space: nowrap;
+      position: relative;
+      text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+      box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.2);
+    }
+    
+    .display::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+          transparent 20%, 
+          rgba(0, 255, 255, 0.1) 50%, 
+          transparent 80%);
+      animation: reflection 6s infinite linear;
+    }
+    
+    @keyframes reflection {
+      0% { transform: rotate(0deg) translate(-50%, -50%); }
+      100% { transform: rotate(360deg) translate(-50%, -50%); }
+    }
+    
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    
+    button {
+      border: none;
+      padding: 20px;
+      font-size: 1.4em;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+      color: white;
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255,255,255,0.2),
+          transparent
+      );
+      transition: 0.5s;
+    }
+    
+    button:hover::before {
+      left: 100%;
+    }
+    
+    .number {
+      background: linear-gradient(145deg, #3a3a3a, #2d2d2d);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .number:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,255,255,0.3);
+    }
+    
+    .operator {
+      background: linear-gradient(145deg, #c96bff, #c247ff);
+      box-shadow: 0 5px 15px rgba(128, 0, 255, 0.3);
+    }
+    
+    .operator:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(170, 0, 255, 0.4);
+      animation: pulse 1s infinite;
+    }
+    
+    .special {
+      background: linear-gradient(145deg, #2ecc71, #27ae60);
+      box-shadow: 0 5px 15px rgba(0,255,0,0.3);
+    }
+    
+    .span-2 {
+      grid-column: span 2;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Floating Particles Background */
+    .particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      animation: float linear infinite;
+    }
+    
+    @keyframes float {
+      from { transform: translateY(0) rotate(0deg); }
+      to { transform: translateY(-100vh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Elemen Partikel Mengambang -->
+  <div class="particles"></div>
+  
+  <div class="calculator">
+    <div class="display">0</div>
+    <div class="buttons">
+      <button class="clear special">AC</button>
+      <button class="special">±</button>
+      <button class="special">%</button>
+      <button class="operator">÷</button>
+      
+      <button class="number">7</button>
+      <button class="number">8</button>
+      <button class="number">9</button>
+      <button class="operator">×</button>
+      
+      <button class="number">4</button>
+      <button class="number">5</button>
+      <button class="number">6</button>
+      <button class="operator">−</button>
+      
+      <button class="number">1</button>
+      <button class="number">2</button>
+      <button class="number">3</button>
+      <button class="operator">+</button>
+      
+      <button class="number span-2">0</button>
+      <button class="number">.</button>
+      <button class="operator equals">=</button>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Generate floating particles
+      const particles = document.querySelector('.particles');
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.cssText = `
+          width: ${Math.random() * 5 + 2}px;
+          height: ${Math.random() * 5 + 2}px;
+          left: ${Math.random() * 100}%;
+          animation-duration: ${Math.random() * 10 + 10}s;
+          animation-delay: ${Math.random() * 5}s;
+        `;
+        particles.appendChild(particle);
+      }
+      
+      // Inisialisasi variabel kalkulator
+      let display = document.querySelector('.display');
+      let currentInput = '0';
+      let firstOperand = null;
+      let operator = null;
+      let waitingForSecondNumber = false;
+      
+      // Fungsi update display
+      function updateDisplay() {
+        let displayValue = currentInput;
+        // Hilangkan .0 yang tidak perlu
+        if(displayValue.includes('.')) {
+          displayValue = displayValue.replace(/\.?0+$/, '');
+        }
+        
+        let num = Number(displayValue);
+        let formatted = displayValue;
+        
+        // Jika angka valid, format berdasarkan panjang input
+        if(!isNaN(num) && isFinite(num)) {
+          // Jika panjang antara 11 dan 25 karakter, gunakan notasi eksponensial
+          if(displayValue.length > 10 && displayValue.length <= 25) {
+            formatted = num.toExponential(5);
+          }
+          // Jika panjang lebih dari 25, tampilkan string penuh
+          else if(displayValue.length > 25) {
+            formatted = displayValue;
+          }
+        }
+        
+        display.textContent = formatted;
+        // Jika menggunakan notasi eksponensial, kecilkan font agar eksponen terlihat
+        if(formatted.includes('e')) {
+          display.style.fontSize = '2em';
+        } else {
+          display.style.fontSize = '2.8em';
+        }
+      }
+      
+      // Handle tombol angka
+      document.querySelectorAll('.number').forEach(button => {
+        button.addEventListener('click', () => {
+          if (waitingForSecondNumber) {
+            currentInput = button.textContent;
+            waitingForSecondNumber = false;
+          } else {
+            currentInput = currentInput === '0' ? button.textContent : currentInput + button.textContent;
+          }
+          updateDisplay();
+        });
+      });
+      
+      // Handle operator (selain tombol sama dengan)
+      document.querySelectorAll('.operator').forEach(button => {
+        if (!button.classList.contains('equals')) {
+          button.addEventListener('click', () => {
+            if (operator && waitingForSecondNumber) return;
+            const inputValue = parseFloat(currentInput);
+            if (firstOperand === null) {
+              firstOperand = inputValue;
+            } else if (operator) {
+              const result = performCalculation();
+              currentInput = String(result);
+              updateDisplay();
+              firstOperand = result;
+            }
+            operator = button.textContent;
+            waitingForSecondNumber = true;
+          });
+        }
+      });
+      
+      // Handle tombol sama dengan
+      document.querySelector('.equals').addEventListener('click', () => {
+        if (!operator || waitingForSecondNumber) return;
+        const result = performCalculation();
+        currentInput = String(result);
+        firstOperand = null;
+        operator = null;
+        waitingForSecondNumber = false;
+        updateDisplay();
+      });
+      
+      // Handle tombol clear
+      document.querySelector('.clear').addEventListener('click', () => {
+        currentInput = '0';
+        firstOperand = null;
+        operator = null;
+        waitingForSecondNumber = false;
+        updateDisplay();
+      });
+      
+      // Fungsi kalkulasi secara langsung
+      function performCalculation() {
+        const secondOperand = parseFloat(currentInput);
+        let result = 0;
+        switch(operator) {
+          case '+':
+            result = firstOperand + secondOperand;
+            break;
+          case '−':
+            result = firstOperand - secondOperand;
+            break;
+          case '×':
+            result = firstOperand * secondOperand;
+            break;
+          case '÷':
+            if(secondOperand === 0) {
+              alert("Tidak dapat membagi dengan 0");
+              return firstOperand;
+            }
+            result = firstOperand / secondOperand;
+            break;
+          default:
+            alert("Operator tidak valid");
+            return firstOperand;
+        }
+        result = parseFloat(result.toFixed(6));
+        return result;
+      }
+      
+      updateDisplay();
+    });
+  </script>
+</body>
+</html>
